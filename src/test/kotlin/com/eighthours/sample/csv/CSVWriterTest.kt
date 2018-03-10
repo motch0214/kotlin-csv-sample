@@ -27,6 +27,7 @@ class CSVWriterTest {
         }
 
         val expected = """
+            "Name","Address","Sex","Age","Birthday"
             "茂木 康文","mogi_yasufumi@example.com","男",32,"1983-04-25"
             "立川 弘也","tachikawa_hironari@example.com","男",69,"1946-05-12"
             "宮田 真一","miyata_shinichi@example.com","男",79,"1935-09-13"
@@ -53,6 +54,7 @@ class CSVWriterTest {
         }
 
         val expected = """
+            "Name","Address","Sex","Age","Birthday"
             "茂木 康文","mogi_yasufumi@example.com",,32,"1983-04-25"
             "立川 弘也","tachikawa_hironari@example.com",,69,"1946-05-12"
             "宮田 真一","miyata_shinichi@example.com",,79,"1935-09-13"
@@ -65,16 +67,17 @@ class CSVWriterTest {
 }
 
 
-class UserWriterShuffle(writer: Writer) : CSVWriter<User>(writer, FORMAT) {
+class UserWriterShuffle(writer: Writer) : CSVWriter<User>(writer, HEADERS, FORMAT) {
 
     private companion object {
         val FORMAT: CSVFormat = CSVFormat.DEFAULT
                 .withRecordSeparator("\n")
                 .withQuoteMode(QuoteMode.NON_NUMERIC)
-        val DATE_FORMAT: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    }
 
-    override val headers = UserColumn.values().toList()
+        val DATE_FORMAT: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+        private val HEADERS = UserColumn.values().toList()
+    }
 
     override fun User.encode() = mapOf(
             UserColumn.ADDRESS to address,

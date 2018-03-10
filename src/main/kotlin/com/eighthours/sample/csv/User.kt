@@ -46,16 +46,17 @@ class UserReader(reader: Reader) : CSVReader<User>(reader, FORMAT) {
 }
 
 
-class UserWriter(writer: Writer) : CSVWriter<User>(writer, FORMAT) {
+class UserWriter(writer: Writer) : CSVWriter<User>(writer, HEADERS, FORMAT) {
 
     private companion object {
         val FORMAT: CSVFormat = CSVFormat.DEFAULT
                 .withRecordSeparator("\n")
                 .withQuoteMode(QuoteMode.NON_NUMERIC)
-        val DATE_FORMAT: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    }
 
-    override val headers = UserColumn.values().toList()
+        val DATE_FORMAT: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+        val HEADERS = UserColumn.values().toList()
+    }
 
     override fun User.encode() = mapOf(
             NAME to name,

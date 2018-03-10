@@ -1,14 +1,14 @@
 package com.eighthours.sample.csv
 
-import org.apache.commons.csv.CSVFormat
-import org.apache.commons.csv.CSVParser
-import org.apache.commons.csv.CSVPrinter
-import org.apache.commons.csv.CSVRecord
+import org.apache.commons.csv.*
 import java.io.Reader
 import java.io.Writer
 
 
-abstract class CSVReader<out R>(reader: Reader, format: CSVFormat = CSVFormat.DEFAULT, offset: Long = 0) {
+private val READER_FORMAT = CSVFormat.DEFAULT
+        .withFirstRecordAsHeader()
+
+abstract class CSVReader<out R>(reader: Reader, format: CSVFormat = READER_FORMAT, offset: Long = 0) {
 
     private val parser = CSVParser(reader, format, 0, offset)
 
@@ -24,11 +24,15 @@ abstract class CSVReader<out R>(reader: Reader, format: CSVFormat = CSVFormat.DE
 }
 
 
-abstract class CSVWriter<in R>(writer: Writer, format: CSVFormat = CSVFormat.DEFAULT) {
+private val WRITER_FORMAT = CSVFormat.DEFAULT
+        .withRecordSeparator('\n')
+        .withQuoteMode(QuoteMode.NON_NUMERIC)
 
-    private val printer: CSVPrinter = CSVPrinter(writer, format)
+abstract class CSVWriter<in R>(writer: Writer, private val headers: List<Column>, format: CSVFormat = WRITER_FORMAT) {
 
-    abstract val headers: List<Column>
+    private val format = format.withHeader(*(headers.map { it.header }.toTypedArray()))
+
+    private val printer: CSVPrinter = this.format.print(writer)
 
     abstract fun R.encode(): Map<out Column, Any>
 
